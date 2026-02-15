@@ -3,6 +3,8 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 struct Mokinys {
     std::string vardas;
@@ -20,7 +22,7 @@ float calculateAverage(const std::vector<int>& arr) {
     return static_cast<float>(sum) / static_cast<float>(arr.size());
 }
 
-float calculateMedian(std::vector<int> arr) {   
+float calculateMedian(std::vector<int> arr) {
     std::sort(arr.begin(), arr.end());
     size_t size = arr.size();
     if (size % 2 == 0) {
@@ -28,6 +30,17 @@ float calculateMedian(std::vector<int> arr) {
     } else {
         return static_cast<float>(arr[size/2]);
     }
+}
+
+void generateRandomGrades(Mokinys& mokinys) {
+    int count = rand() % 10 + 1;
+    mokinys.tarp_rez.clear();
+    for (int i = 0; i < count; ++i) {
+        mokinys.tarp_rez.push_back(rand() % 11);
+    }
+    mokinys.egz_rez = rand() % 11;
+    std::cout << "Sugeneruoti " << count << " namų darbų rezultatai";
+    std::cout << " ir egzamino rezultatas: " << mokinys.egz_rez << "\n";
 }
 
 void readStudentData(Mokinys& mokinys) {
@@ -111,12 +124,36 @@ void displayResults(const std::vector<Mokinys>& students, const std::string& cho
 }
 
 int main() {
+    srand(static_cast<unsigned>(time(nullptr)));
+
+    int input_mode;
+    std::cout << "Pasirinkite įvesties būdą:\n"
+              << "1 - Rankinis įvedimas\n"
+              << "2 - Atsitiktinis generavimas\n"
+              << "Jūsų pasirinkimas: ";
+    std::cin >> input_mode;
+
+    if (std::cin.fail() || (input_mode != 1 && input_mode != 2)) {
+        std::cout << "Neteisinga įvestis: tinka '1' arba '2'.\n";
+        return 1;
+    }
+
     std::vector<Mokinys> students;
 
     while (true) {
         std::cout << "\nĮveskite " << students.size() + 1 << " studento duomenis:\n";
         Mokinys m;
-        readStudentData(m);
+
+        if (input_mode == 1) {
+            readStudentData(m);
+        } else {
+            std::cout << "Įveskite vardą: ";
+            std::cin >> m.vardas;
+            std::cout << "Įveskite pavardę: ";
+            std::cin >> m.pavarde;
+            generateRandomGrades(m);
+        }
+
         students.push_back(m);
 
         std::string ans;

@@ -61,7 +61,7 @@ void readStudentData(Mokinys& mokinys) {
     int count = 0;
     int* grades = new int[capacity];
 
-    while (1) {
+    while (true) {
         std::cout << "Įveskite " << count + 1 << " tarpinį rezultatą (arba -1, jei baigėte): ";
         int grade;
         std::cin >> grade;
