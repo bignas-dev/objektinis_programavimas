@@ -132,8 +132,7 @@ int main() {
         return 1;
     }
 
-    const int STUDENT_COUNT = 2;
-    Mokinys students[STUDENT_COUNT];
+    Mokinys students[m];
     
     std::string choice;
     std::cout << "Pasirinkite galutinio balo skaičiavimo būdą:\n"
@@ -147,13 +146,13 @@ int main() {
         return 1;
     }
 
-    for (int i = 0; i < STUDENT_COUNT; i++) {
+    for (int i = 0; i < m; i++) {
         std::cout << "\n" << i + 1 << " studento duomenys:\n";
         readStudentData(students[i]);
         calculateFinalGrade(students[i], choice);
     }
 
-    displayResults(students, STUDENT_COUNT, choice);
+    displayResults(students, m, choice);
 
     return 0;
 }
