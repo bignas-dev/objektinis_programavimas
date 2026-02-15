@@ -105,6 +105,33 @@ void displayResults(Mokinys students[], int count, std::string choice) {
 }
 
 int main() {
+    int n, m;
+    std::cout << "Iveskite namu darbu skaiciu: ";
+    std::cin >> n;
+
+    if (std::cin.fail()) {
+        std::cout << "Neteisinga įvestis: privalote įvesti sveikaji skaičių.\n";
+        return 1;
+    }
+
+    if (n < 0) {
+        std::cout << "Neteisinga įvestis: rezultatas turi būti daugiau nei 0.\n";
+        return 1;
+    }
+
+    std::cout << "Iveskite studentu skaiciu: ";
+    std::cin >> m;
+
+    if (std::cin.fail()) {
+        std::cout << "Neteisinga įvestis: privalote įvesti sveikaji skaičių.\n";
+        return 1;
+    }
+
+    if (m < 0) {
+        std::cout << "Neteisinga įvestis: rezultatas turi būti daugiau nei 0.\n";
+        return 1;
+    }
+
     const int STUDENT_COUNT = 2;
     Mokinys students[STUDENT_COUNT];
     
