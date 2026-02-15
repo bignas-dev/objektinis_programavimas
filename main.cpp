@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <cstdlib>
 
 struct Mokinys {
     std::string vardas;
@@ -13,16 +14,15 @@ struct Mokinys {
 
 float calculateAverage(int arr[], int size) {
     int sum = 0;
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; i++) {
         sum += arr[i];
     }
-
     return static_cast<float>(sum) / static_cast<float>(size);
 }
 
 float calculateMedian(int arr[], int size) {
     int temp[3];
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; i++) {
         temp[i] = arr[i];
     }
     std::sort(temp, temp + size);
@@ -37,15 +37,37 @@ float calculateMedian(int arr[], int size) {
 void readStudentData(Mokinys& mokinys) {
     std::cout << "Įveskite vardą: ";
     std::cin >> mokinys.vardas;
+
     std::cout << "Įveskite pavardę: ";
     std::cin >> mokinys.pavarde;
 
-    for (size_t i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; i++) {
         std::cout << "Įveskite " << i + 1 << " tarpinį rezultatą: ";
         std::cin >> mokinys.tarp_rez[i];
+
+        if (std::cin.fail()) {
+            std::cout << "Neteisinga įvestis: privalote įvesti sveikąjį skaičių.\n";
+            exit(1);
+        }
+
+        if (mokinys.tarp_rez[i] < 0 || mokinys.tarp_rez[i] > 10) {
+            std::cout << "Neteisinga įvestis: rezultatas turi būti nuo 0 iki 10.\n";
+            exit(1);
+        }
     }
+
     std::cout << "Įveskite egzamino rezultatą: ";
     std::cin >> mokinys.egz_rez;
+
+    if (std::cin.fail()) {
+        std::cout << "Neteisinga įvestis: privalote įvesti sveikąjį skaičių.\n";
+        exit(1);
+    }
+
+    if (mokinys.egz_rez < 0 || mokinys.egz_rez > 10) {
+        std::cout << "Neteisinga įvestis: egzamino rezultatas turi būti nuo 0 iki 10.\n";
+        exit(1);
+    }
 }
 
 void calculateFinalGrade(Mokinys &mokinys, std::string choice) {
@@ -86,7 +108,7 @@ int main() {
     const int STUDENT_COUNT = 2;
     Mokinys students[STUDENT_COUNT];
     
-    std :: string choice;
+    std::string choice;
     std::cout << "Pasirinkite galutinio balo skaičiavimo būdą:\n"
               << "1 - Vidurkis\n"
               << "2 - Mediana\n"
@@ -94,7 +116,7 @@ int main() {
     std::cin >> choice;
 
     if (choice != "1" && choice != "2") {
-        std::cout << "Neteisinga ivestis: tinka '1' arba '2', gauta '" << choice << "'\n";
+        std::cout << "Neteisinga įvestis: tinka '1' arba '2', gauta '" << choice << "'\n";
         return 1;
     }
 
