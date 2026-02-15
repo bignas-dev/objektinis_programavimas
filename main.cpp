@@ -34,14 +34,14 @@ float calculateMedian(int arr[], int size) {
     }
 }
 
-void readStudentData(Mokinys& mokinys) {
+void readStudentData(Mokinys& mokinys, int tarp_count) {
     std::cout << "Įveskite vardą: ";
     std::cin >> mokinys.vardas;
 
     std::cout << "Įveskite pavardę: ";
     std::cin >> mokinys.pavarde;
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < tarp_count; i++) {
         std::cout << "Įveskite " << i + 1 << " tarpinį rezultatą: ";
         std::cin >> mokinys.tarp_rez[i];
 
@@ -148,7 +148,7 @@ int main() {
 
     for (int i = 0; i < m; i++) {
         std::cout << "\n" << i + 1 << " studento duomenys:\n";
-        readStudentData(students[i]);
+        readStudentData(students[i], n);
         calculateFinalGrade(students[i], choice);
     }
 
