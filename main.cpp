@@ -48,9 +48,9 @@ void readStudentData(Mokinys& mokinys) {
     std::cin >> mokinys.egz_rez;
 }
 
-void calculateFinalGrade(Mokinys &mokinys, int choice) {
+void calculateFinalGrade(Mokinys &mokinys, std::string choice) {
     float tarp_rez;
-    if (choice == 1) {
+    if (choice == "1") {
         tarp_rez = calculateAverage(mokinys.tarp_rez, 3);
     } else {
         tarp_rez = calculateMedian(mokinys.tarp_rez, 3);
@@ -58,13 +58,13 @@ void calculateFinalGrade(Mokinys &mokinys, int choice) {
     mokinys.galutinis = 0.6f * mokinys.egz_rez + 0.4f * tarp_rez;
 }
 
-void displayResults(Mokinys students[], int count, int choice) {
+void displayResults(Mokinys students[], int count, std::string choice) {
     const int langelio_ilgis = 20;
     
     std::cout << "\n" << std::setw(langelio_ilgis) << "Pavardė"
               << std::setw(langelio_ilgis) << "Vardas";
     
-    if (choice == 1) {
+    if (choice == "1") {
         std::cout << std::setw(langelio_ilgis) << "Galutinis (Vid.)";
     } else {
         std::cout << std::setw(langelio_ilgis) << "Galutinis (Med.)";
@@ -86,12 +86,17 @@ int main() {
     const int STUDENT_COUNT = 2;
     Mokinys students[STUDENT_COUNT];
     
-    int choice;
+    std :: string choice;
     std::cout << "Pasirinkite galutinio balo skaičiavimo būdą:\n"
               << "1 - Vidurkis\n"
               << "2 - Mediana\n"
               << "Jūsų pasirinkimas: ";
     std::cin >> choice;
+
+    if (choice != "1" && choice != "2") {
+        std::cout << "Neteisinga ivestis: tinka '1' arba '2', gauta '" << choice << "'\n";
+        return 1;
+    }
 
     for (int i = 0; i < STUDENT_COUNT; i++) {
         std::cout << "\n" << i + 1 << " studento duomenys:\n";
