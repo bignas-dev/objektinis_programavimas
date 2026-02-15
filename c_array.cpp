@@ -3,6 +3,7 @@
 #include <string>
 #include <algorithm>
 #include <cstdlib>
+#include <ctime>
 
 struct Mokinys {
     std::string vardas;
@@ -37,6 +38,17 @@ float calculateMedian(int arr[], int size) {
     }
     delete[] temp;
     return result;
+}
+
+void generateRandomGrades(Mokinys& mokinys) {
+    mokinys.tarp_count = rand() % 10 + 1;
+    mokinys.tarp_rez = new int[mokinys.tarp_count];
+
+    for (int i = 0; i < mokinys.tarp_count; i++) {
+        mokinys.tarp_rez[i] = rand() % 11;
+    }
+
+    mokinys.egz_rez = rand() % 11;
 }
 
 void readStudentData(Mokinys& mokinys) {
@@ -141,14 +153,39 @@ void displayResults(Mokinys* students[], int count, std::string choice) {
 }
 
 int main() {
+    srand(static_cast<unsigned>(time(nullptr)));
+
+    int input_mode;
+    std::cout << "Pasirinkite įvesties būdą:\n"
+              << "1 - Rankinis įvedimas\n"
+              << "2 - Atsitiktinis generavimas\n"
+              << "Jūsų pasirinkimas: ";
+    std::cin >> input_mode;
+
+    if (std::cin.fail() || (input_mode != 1 && input_mode != 2)) {
+        std::cout << "Neteisinga įvestis: tinka '1' arba '2'.\n";
+        return 1;
+    }
+
     int student_capacity = 2;
     int student_count = 0;
     Mokinys** students = new Mokinys*[student_capacity];
 
-    while (1) {
+    while (true) {
         std::cout << "\nĮveskite " << student_count + 1 << " studento duomenis:\n";
         Mokinys* m = new Mokinys;
-        readStudentData(*m);
+
+        if (input_mode == 1) {
+            readStudentData(*m);
+        } else {
+            std::cout << "Įveskite vardą: ";
+            std::cin >> m->vardas;
+            std::cout << "Įveskite pavardę: ";
+            std::cin >> m->pavarde;
+            generateRandomGrades(*m);
+            std::cout << "Sugeneruoti " << m->tarp_count << " namų darbų rezultatai";
+            std::cout << " ir egzamino rezultatas: " << m->egz_rez << "\n";
+        }
 
         if (student_count == student_capacity) {
             student_capacity *= 2;
