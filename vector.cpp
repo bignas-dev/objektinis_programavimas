@@ -149,7 +149,8 @@ void calculateFinalGrade(Mokinys& mokinys, const std::string& choice) {
     mokinys.galutinis = 0.6f * mokinys.egz_rez + 0.4f * tarp_rez;
 }
 
-void displayResults(const std::vector<Mokinys>& students, const std::string& choice, std::ostream& out = std::cout) {
+void displayResults(const std::vector<Mokinys>& students, const std::string& choice) { 
+    std::ostream& out = std::cout;
     const int langelio_ilgis = 30;
     std::string kategorija = (choice == "1") ? "Galutinis (Vid.)" : "Galutinis (Med.)";
 
