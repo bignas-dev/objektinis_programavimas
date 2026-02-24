@@ -86,7 +86,6 @@ void readStudentData(Mokinys& mokinys) {
     }
 }
 
-
 std::vector<Mokinys> readFromFile(const std::string& filename) {
     std::vector<Mokinys> students;
     std::ifstream file(filename);
@@ -96,7 +95,6 @@ std::vector<Mokinys> readFromFile(const std::string& filename) {
     }
 
     std::string line;
-    
     std::getline(file, line);
 
     int lineNum = 1;
@@ -108,7 +106,6 @@ std::vector<Mokinys> readFromFile(const std::string& filename) {
         Mokinys m;
         iss >> m.vardas >> m.pavarde;
 
-        
         int grade;
         for (int i = 0; i < 5; ++i) {
             if (!(iss >> grade)) {
@@ -124,7 +121,6 @@ std::vector<Mokinys> readFromFile(const std::string& filename) {
             m.tarp_rez.push_back(grade);
         }
 
-        
         if (!(iss >> m.egz_rez)) {
             std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
                       << ": trūksta egzamino rezultato." << std::endl;
@@ -143,7 +139,7 @@ std::vector<Mokinys> readFromFile(const std::string& filename) {
     return students;
 }
 
-void calculateFinalGrade(Mokinys &mokinys, const std::string& choice) {
+void calculateFinalGrade(Mokinys& mokinys, const std::string& choice) {
     float tarp_rez;
     if (choice == "1") {
         tarp_rez = calculateAverage(mokinys.tarp_rez);
@@ -153,7 +149,7 @@ void calculateFinalGrade(Mokinys &mokinys, const std::string& choice) {
     mokinys.galutinis = 0.6f * mokinys.egz_rez + 0.4f * tarp_rez;
 }
 
-void displayResults(const std::vector<Mokinys>& students, const std::string& choice)  {
+void displayResults(const std::vector<Mokinys>& students, const std::string& choice, std::ostream& out = std::cout) {
     const int langelio_ilgis = 30;
     std::string kategorija = (choice == "1") ? "Galutinis (Vid.)" : "Galutinis (Med.)";
 
@@ -205,7 +201,6 @@ int main() {
     std::vector<Mokinys> students;
 
     if (input_mode == 1) {
-        
         while (true) {
             std::cout << "\nĮveskite " << students.size() + 1 << " studento duomenis:\n";
             Mokinys m;
@@ -265,6 +260,36 @@ int main() {
 
     for (auto& m : students) {
         calculateFinalGrade(m, choice);
+    }
+
+    int sort_choice;
+    std::cout << "\nPasirinkite rūšiavimo kriterijų:\n"
+              << "1 - Pagal vardą\n"
+              << "2 - Pagal pavardę\n"
+              << "3 - Pagal galutinį balą\n"
+              << "Jūsų pasirinkimas: ";
+    std::cin >> sort_choice;
+
+    if (std::cin.fail() || sort_choice < 1 || sort_choice > 3) {
+        std::cout << "Neteisinga įvestis: tinka '1', '2' arba '3'.\n";
+        return 1;
+    }
+
+    if (sort_choice == 1) {
+        std::sort(students.begin(), students.end(),
+            [](const Mokinys& a, const Mokinys& b) {
+                return a.vardas < b.vardas;
+            });
+    } else if (sort_choice == 2) {
+        std::sort(students.begin(), students.end(),
+            [](const Mokinys& a, const Mokinys& b) {
+                return a.pavarde < b.pavarde;
+            });
+    } else { 
+        std::sort(students.begin(), students.end(),
+            [](const Mokinys& a, const Mokinys& b) {
+                return a.galutinis > b.galutinis;
+            });
     }
 
     displayResults(students, choice);
