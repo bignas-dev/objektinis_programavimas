@@ -190,7 +190,7 @@ int main() {
     std::cout << "Pasirinkite įvesties būdą:\n"
               << "1 - Rankinis įvedimas\n"
               << "2 - Atsitiktinis generavimas\n"
-              << "3 - Nuskaitymas iš failo (kursiokai.txt)\n"
+              << "3 - Nuskaitymas iš failo\n"
               << "Jūsų pasirinkimas: ";
     std::cin >> input_mode;
 
@@ -239,13 +239,16 @@ int main() {
         }
     }
     else { 
-        students = readFromFile("kursiokai.txt");
+        std::string filename;
+        std::cout << "Įveskite failo pavadinimą: ";
+        std::cin >> filename;
+        students = readFromFile(filename);
         if (students.empty()) {
             std::cerr << "Nepavyko nuskaityti jokių duomenų iš failo. Programa baigiama." << std::endl;
             return 1;
         }
         std::cout << "Iš failo nuskaityta " << students.size() << " studentų.\n";
-    }
+}
 
     std::string choice;
     std::cout << "\nPasirinkite galutinio balo skaičiavimo būdą:\n"
