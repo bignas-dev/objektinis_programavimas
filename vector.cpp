@@ -36,7 +36,6 @@ float calculateMedian(std::vector<int> arr) {
 
 void generateRandomGrades(Mokinys& mokinys) {
     int tarp_count = rand() % 10 + 1; 
-    mokinys.tarp_rez.clear();
     for (int i = 0; i < tarp_count; ++i) {
         mokinys.tarp_rez.push_back(rand() % 11); 
     }
@@ -56,8 +55,6 @@ void readStudentData(Mokinys& mokinys) {
         std::cin >> grade;
 
         if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(10000, '\n');
             std::cout << "Neteisinga įvestis. Bandykite dar kartą.\n";
             continue;
         }
@@ -113,7 +110,6 @@ std::vector<Mokinys> readFromFile(const std::string& filename) {
 
         
         int grade;
-        m.tarp_rez.clear();
         for (int i = 0; i < 5; ++i) {
             if (!(iss >> grade)) {
                 std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
@@ -157,28 +153,30 @@ void calculateFinalGrade(Mokinys &mokinys, const std::string& choice) {
     mokinys.galutinis = 0.6f * mokinys.egz_rez + 0.4f * tarp_rez;
 }
 
-void displayResults(const std::vector<Mokinys>& students, const std::string& choice) {
-    const int langelio_ilgis = 20;
+void displayResults(const std::vector<Mokinys>& students, const std::string& choice)  {
+    const int langelio_ilgis = 30;
+    std::string kategorija = (choice == "1") ? "Galutinis (Vid.)" : "Galutinis (Med.)";
 
-    std::cout << "\n" << std::setw(langelio_ilgis) << "Pavardė"
-              << std::setw(langelio_ilgis) << "Vardas";
+    auto old_precision = out.precision();
+    auto old_flags = out.flags();
 
-    if (choice == "1") {
-        std::cout << std::setw(langelio_ilgis) << "Galutinis (Vid.)";
-    } else {
-        std::cout << std::setw(langelio_ilgis) << "Galutinis (Med.)";
-    }
-    std::cout << "\n";
+    out << std::left;  
+    
+    out << std::setw(langelio_ilgis) << "Pavardė"
+        << std::setw(langelio_ilgis) << "Vardas"
+        << std::setw(langelio_ilgis) << kategorija << '\n';
 
-    std::cout << std::setfill('-') << std::setw(langelio_ilgis * 3) << ""
-              << std::setfill(' ') << "\n";
+    out << std::string(3 * langelio_ilgis, '-') << '\n';
 
     for (const auto& m : students) {
-        std::cout << std::setw(langelio_ilgis) << m.pavarde
-                  << std::setw(langelio_ilgis) << m.vardas
-                  << std::setw(langelio_ilgis) << std::fixed << std::setprecision(2)
-                  << m.galutinis << "\n";
+        out << std::setw(langelio_ilgis) << m.pavarde
+            << std::setw(langelio_ilgis) << m.vardas
+            << std::setw(langelio_ilgis) << std::fixed << std::setprecision(2) << m.galutinis
+            << '\n';
     }
+
+    out.flags(old_flags);
+    out.precision(old_precision);
 }
 
 int main() {
