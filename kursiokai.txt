@@ -1,0 +1,6 @@
+Vardas Pavardė ND1 ND2 ND3 ND4 ND5 Egzaminas
+Jonas Jonaitis 8 9 10 6 10 9
+Petras Petraitis 7 10 8 5 4 6
+Antana Antanaitis 9 9 9 9 9 10
+Kazys Kazlauskas 5 6 7 8 9 4
+Lina Lingytė 10 9 8 7 6 8

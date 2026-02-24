@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>   
+#include <sstream>   
 
 struct Mokinys {
     std::string vardas;
@@ -87,6 +89,64 @@ void readStudentData(Mokinys& mokinys) {
     }
 }
 
+
+std::vector<Mokinys> readFromFile(const std::string& filename) {
+    std::vector<Mokinys> students;
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Klaida: nepavyko atidaryti failo " << filename << std::endl;
+        return students; 
+    }
+
+    std::string line;
+    
+    std::getline(file, line);
+
+    int lineNum = 1;
+    while (std::getline(file, line)) {
+        lineNum++;
+        if (line.empty()) continue; 
+
+        std::istringstream iss(line);
+        Mokinys m;
+        iss >> m.vardas >> m.pavarde;
+
+        
+        int grade;
+        m.tarp_rez.clear();
+        for (int i = 0; i < 5; ++i) {
+            if (!(iss >> grade)) {
+                std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
+                          << ": trūksta namų darbų pažymių." << std::endl;
+                return students;
+            }
+            if (grade < 0 || grade > 10) {
+                std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
+                          << ": pažymys " << grade << " neleistinas (turi būti 0-10)." << std::endl;
+                return students;
+            }
+            m.tarp_rez.push_back(grade);
+        }
+
+        
+        if (!(iss >> m.egz_rez)) {
+            std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
+                      << ": trūksta egzamino rezultato." << std::endl;
+            return students;
+        }
+        if (m.egz_rez < 0 || m.egz_rez > 10) {
+            std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
+                      << ": egzamino rezultatas " << m.egz_rez << " neleistinas (turi būti 0-10)." << std::endl;
+            return students;
+        }
+
+        students.push_back(m);
+    }
+
+    file.close();
+    return students;
+}
+
 void calculateFinalGrade(Mokinys &mokinys, const std::string& choice) {
     float tarp_rez;
     if (choice == "1") {
@@ -135,40 +195,62 @@ int main() {
     std::cout << "Pasirinkite įvesties būdą:\n"
               << "1 - Rankinis įvedimas\n"
               << "2 - Atsitiktinis generavimas\n"
+              << "3 - Nuskaitymas iš failo (kursiokai.txt)\n"
               << "Jūsų pasirinkimas: ";
     std::cin >> input_mode;
 
-    if (std::cin.fail() || (input_mode != 1 && input_mode != 2)) {
-        std::cout << "Neteisinga įvestis: tinka '1' arba '2'.\n";
+    if (std::cin.fail() || input_mode < 1 || input_mode > 3) {
+        std::cout << "Neteisinga įvestis: tinka '1', '2' arba '3'.\n";
         return 1;
     }
 
     std::vector<Mokinys> students;
 
-    while (true) {
-        std::cout << "\nĮveskite " << students.size() + 1 << " studento duomenis:\n";
-        Mokinys m;
-
-        if (input_mode == 1) {
+    if (input_mode == 1) {
+        
+        while (true) {
+            std::cout << "\nĮveskite " << students.size() + 1 << " studento duomenis:\n";
+            Mokinys m;
             readStudentData(m);
-        } else {
+            students.push_back(m);
+
+            std::string ans;
+            std::cout << "Ar norite įvesti dar vieną studentą? (t/n): ";
+            std::cin >> ans;
+            if (ans != "T" && ans != "t") {
+                break;
+            }
+        }
+    }
+    else if (input_mode == 2) {
+        while (true) {
+            std::cout << "\nĮveskite " << students.size() + 1 << " studento duomenis:\n";
+            Mokinys m;
             m.vardas = vardai[rand() % vardu_kiekis];
             m.pavarde = pavardes[rand() % pavardziu_kiekis];
             generateRandomGrades(m);
-            
+
             std::cout << "Sugeneruotas studentas: " << m.vardas << " " << m.pavarde << "\n";
             std::cout << "Sugeneruoti " << m.tarp_rez.size() << " namų darbų rezultatai";
             std::cout << " ir egzamino rezultatas: " << m.egz_rez << "\n";
-        }
 
-        students.push_back(m);
+            students.push_back(m);
 
-        std::string ans;
-        std::cout << "Ar norite įvesti dar vieną studentą? (t/n): ";
-        std::cin >> ans;
-        if (ans != "T" && ans != "t") {
-            break;
+            std::string ans;
+            std::cout << "Ar norite įvesti dar vieną studentą? (t/n): ";
+            std::cin >> ans;
+            if (ans != "T" && ans != "t") {
+                break;
+            }
         }
+    }
+    else { 
+        students = readFromFile("kursiokai.txt");
+        if (students.empty()) {
+            std::cerr << "Nepavyko nuskaityti jokių duomenų iš failo. Programa baigiama." << std::endl;
+            return 1;
+        }
+        std::cout << "Iš failo nuskaityta " << students.size() << " studentų.\n";
     }
 
     std::string choice;
