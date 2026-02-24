@@ -67,8 +67,6 @@ void readStudentData(Mokinys& mokinys) {
         std::cin >> grade;
 
         if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(10000, '\n');
             std::cout << "Neteisinga įvestis. Bandykite dar kartą.\n";
             continue;
         }
@@ -155,6 +153,13 @@ void displayResults(Mokinys* students[], int count, std::string choice) {
 int main() {
     srand(static_cast<unsigned>(time(nullptr)));
 
+    const std::string vardai[] = {"Jonas", "Petras", "Antanas", "Kazys", "Linas",
+                                   "Marius", "Tomas", "Andrius", "Darius", "Gediminas"};
+    const std::string pavardes[] = {"Jonaitis", "Petraitis", "Antanaitis", "Kazlauskas", "Lingys",
+                                     "Mariūnas", "Tomauskas", "Andriulis", "Dargis", "Gedminas"};
+    int vardu_kiekis = sizeof(vardai) / sizeof(vardai[0]);
+    int pavardziu_kiekis = sizeof(pavardes) / sizeof(pavardes[0]);
+
     int input_mode;
     std::cout << "Pasirinkite įvesties būdą:\n"
               << "1 - Rankinis įvedimas\n"
@@ -178,11 +183,11 @@ int main() {
         if (input_mode == 1) {
             readStudentData(*m);
         } else {
-            std::cout << "Įveskite vardą: ";
-            std::cin >> m->vardas;
-            std::cout << "Įveskite pavardę: ";
-            std::cin >> m->pavarde;
+            m->vardas = vardai[rand() % vardu_kiekis];
+            m->pavarde = pavardes[rand() % pavardziu_kiekis];
             generateRandomGrades(*m);
+            
+            std::cout << "Sugeneruotas studentas: " << m->vardas << " " << m->pavarde << "\n";
             std::cout << "Sugeneruoti " << m->tarp_count << " namų darbų rezultatai";
             std::cout << " ir egzamino rezultatas: " << m->egz_rez << "\n";
         }

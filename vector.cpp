@@ -22,7 +22,7 @@ float calculateAverage(const std::vector<int>& arr) {
     return static_cast<float>(sum) / static_cast<float>(arr.size());
 }
 
-float calculateMedian(std::vector<int> arr) {
+float calculateMedian(std::vector<int> arr) {   
     std::sort(arr.begin(), arr.end());
     size_t size = arr.size();
     if (size % 2 == 0) {
@@ -33,14 +33,12 @@ float calculateMedian(std::vector<int> arr) {
 }
 
 void generateRandomGrades(Mokinys& mokinys) {
-    int count = rand() % 10 + 1;
+    int tarp_count = rand() % 10 + 1; 
     mokinys.tarp_rez.clear();
-    for (int i = 0; i < count; ++i) {
-        mokinys.tarp_rez.push_back(rand() % 11);
+    for (int i = 0; i < tarp_count; ++i) {
+        mokinys.tarp_rez.push_back(rand() % 11); 
     }
     mokinys.egz_rez = rand() % 11;
-    std::cout << "Sugeneruoti " << count << " namų darbų rezultatai";
-    std::cout << " ir egzamino rezultatas: " << mokinys.egz_rez << "\n";
 }
 
 void readStudentData(Mokinys& mokinys) {
@@ -126,6 +124,13 @@ void displayResults(const std::vector<Mokinys>& students, const std::string& cho
 int main() {
     srand(static_cast<unsigned>(time(nullptr)));
 
+    const std::string vardai[] = {"Jonas", "Petras", "Antanas", "Kazys", "Linas",
+                                   "Marius", "Tomas", "Andrius", "Darius", "Gediminas"};
+    const std::string pavardes[] = {"Jonaitis", "Petraitis", "Antanaitis", "Kazlauskas", "Lingys",
+                                     "Mariūnas", "Tomauskas", "Andriulis", "Dargis", "Gedminas"};
+    int vardu_kiekis = sizeof(vardai) / sizeof(vardai[0]);
+    int pavardziu_kiekis = sizeof(pavardes) / sizeof(pavardes[0]);
+
     int input_mode;
     std::cout << "Pasirinkite įvesties būdą:\n"
               << "1 - Rankinis įvedimas\n"
@@ -147,11 +152,13 @@ int main() {
         if (input_mode == 1) {
             readStudentData(m);
         } else {
-            std::cout << "Įveskite vardą: ";
-            std::cin >> m.vardas;
-            std::cout << "Įveskite pavardę: ";
-            std::cin >> m.pavarde;
+            m.vardas = vardai[rand() % vardu_kiekis];
+            m.pavarde = pavardes[rand() % pavardziu_kiekis];
             generateRandomGrades(m);
+            
+            std::cout << "Sugeneruotas studentas: " << m.vardas << " " << m.pavarde << "\n";
+            std::cout << "Sugeneruoti " << m.tarp_rez.size() << " namų darbų rezultatai";
+            std::cout << " ir egzamino rezultatas: " << m.egz_rez << "\n";
         }
 
         students.push_back(m);
