@@ -95,9 +95,13 @@ void readStudentData(Mokinys& mokinys) {
         count++;
     }
 
-    if (count == 0) {
-        std::cout << "Turite įvesti bent vieną tarpinį rezultatą.\n";
-        exit(1);
+    try {
+        if (count == 0) {
+            throw std::runtime_error("Turite įvesti bent vieną tarpinį rezultatą.\n");
+        }
+    } catch (const std::runtime_error& e) {
+        std::cout << e.what();
+        throw;
     }
 
     int* final_grades = new int[count];
