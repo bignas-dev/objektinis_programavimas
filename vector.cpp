@@ -100,9 +100,13 @@ void readStudentData(Mokinys& mokinys) {
 std::vector<Mokinys> readFromFile(const std::string& filename) {
     std::vector<Mokinys> students;
     std::ifstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Klaida: nepavyko atidaryti failo " << filename << std::endl;
-        return students; 
+    try {
+        if (!file.is_open()) {
+            throw std::runtime_error("Klaida: nepavyko atidaryti failo " + filename + "\n");
+        }
+    } catch (const std::runtime_error& e) {
+        std::cerr << e.what();
+        throw;
     }
 
     std::string line;
