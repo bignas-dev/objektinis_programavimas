@@ -123,28 +123,38 @@ std::vector<Mokinys> readFromFile(const std::string& filename) {
 
         int grade;
         for (int i = 0; i < 5; ++i) {
-            if (!(iss >> grade)) {
-                std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
-                          << ": trūksta namų darbų pažymių." << std::endl;
-                return students;
-            }
-            if (grade < 0 || grade > 10) {
-                std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
-                          << ": pažymys " << grade << " neleistinas (turi būti 0-10)." << std::endl;
-                return students;
+            try {
+                if (!(iss >> grade)) {
+                    std::string err = "Klaida faile " + filename + ", eilutėje " + std::to_string(lineNum)
+                              + ": trūksta namų darbų pažymių.\n";
+                    throw std::runtime_error(err);
+                }
+                if (grade < 0 || grade > 10) {
+                    std::string err = "Klaida faile " + filename + ", eilutėje " + std::to_string(lineNum)
+                              + ": pažymys " + std::to_string(grade) + " neleistinas (turi būti 0-10).\n";
+                    throw std::runtime_error(err);
+                }
+            } catch (const std::runtime_error& e) {
+                std::cerr << e.what();
+                throw;
             }
             m.tarp_rez.push_back(grade);
         }
 
-        if (!(iss >> m.egz_rez)) {
-            std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
-                      << ": trūksta egzamino rezultato." << std::endl;
-            return students;
-        }
-        if (m.egz_rez < 0 || m.egz_rez > 10) {
-            std::cerr << "Klaida faile " << filename << ", eilutėje " << lineNum
-                      << ": egzamino rezultatas " << m.egz_rez << " neleistinas (turi būti 0-10)." << std::endl;
-            return students;
+        try {
+            if (!(iss >> m.egz_rez)) {
+                std::string err = "Klaida faile " + filename + ", eilutėje " + std::to_string(lineNum)
+                          + ": trūksta egzamino rezultato.\n";
+                throw std::runtime_error(err);
+            }
+            if (m.egz_rez < 0 || m.egz_rez > 10) {
+                std::string err = "Klaida faile " + filename + ", eilutėje " + std::to_string(lineNum)
+                          + ": egzamino rezultatas " + std::to_string(m.egz_rez) + " neleistinas (turi būti 0-10).\n";
+                throw std::runtime_error(err);
+            }
+        } catch (const std::runtime_error& e) {
+            std::cerr << e.what();
+            throw;
         }
 
         students.push_back(m);
