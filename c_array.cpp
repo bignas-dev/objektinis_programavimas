@@ -232,9 +232,13 @@ int main() {
               << "Jūsų pasirinkimas: ";
     std::cin >> choice;
 
-    if (choice != "1" && choice != "2") {
-        std::cout << "Neteisinga įvestis: tinka '1' arba '2'.\n";
-        return 1;
+    try {
+        if (choice != "1" && choice != "2") {
+            throw std::runtime_error("Neteisinga įvestis: tinka '1' arba '2'.\n");
+        }
+    } catch (const std::runtime_error& e) {
+        std::cout << e.what();
+        throw;
     }
 
     for (int i = 0; i < student_count; ++i) {
