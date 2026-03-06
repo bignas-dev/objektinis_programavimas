@@ -7,6 +7,7 @@
 #include <ctime>
 #include <fstream>   
 #include <sstream>   
+#include <stdexcept>   
 
 struct Mokinys {
     std::string vardas;
@@ -54,15 +55,19 @@ void readStudentData(Mokinys& mokinys) {
         int grade;
         std::cin >> grade;
 
-        if (std::cin.fail()) {
-            std::cout << "Neteisinga įvestis. Bandykite dar kartą.\n";
-            continue;
-        }
-        if (grade == -1) {
-            break;
-        }
-        if (grade < 0 || grade > 10) {
-            std::cout << "Rezultatas turi būti nuo 0 iki 10. Bandykite dar kartą.\n";
+        try {
+            std::cin >> grade;
+            if (std::cin.fail()) {
+                throw std::runtime_error("Neteisinga įvestis. Bandykite dar kartą.\n");
+            }
+            if (grade == -1) {
+                break;
+            }
+            if (grade < 0 || grade > 10) {
+                throw std::runtime_error("Rezultatas turi būti nuo 0 iki 10. Bandykite dar kartą.\n");
+            }
+        } catch (const std::runtime_error& e) {
+            std::cout << e.what();
             continue;
         }
         mokinys.tarp_rez.push_back(grade);
