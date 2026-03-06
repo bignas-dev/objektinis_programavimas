@@ -113,15 +113,17 @@ void readStudentData(Mokinys& mokinys) {
     mokinys.tarp_count = count;
 
     std::cout << "Įveskite egzamino rezultatą: ";
-    std::cin >> mokinys.egz_rez;
-
-    if (std::cin.fail()) {
-        std::cout << "Neteisinga įvestis: privalote įvesti sveikąjį skaičių.\n";
-        exit(1);
-    }
-    if (mokinys.egz_rez < 0 || mokinys.egz_rez > 10) {
-        std::cout << "Neteisinga įvestis: egzamino rezultatas turi būti nuo 0 iki 10.\n";
-        exit(1);
+    try {
+        std::cin >> mokinys.egz_rez;
+        if (std::cin.fail()) {
+            throw std::runtime_error("Neteisinga įvestis: privalote įvesti sveikąjį skaičių.\n");
+        }
+        if (mokinys.egz_rez < 0 || mokinys.egz_rez > 10) {
+            throw std::runtime_error("Neteisinga įvestis: egzamino rezultatas turi būti nuo 0 iki 10.\n");
+        }
+    } catch (const std::runtime_error& e) {
+        std::cout << e.what();
+        throw;
     }
 }
 
