@@ -178,9 +178,13 @@ int main() {
               << "Jūsų pasirinkimas: ";
     std::cin >> input_mode;
 
-    if (std::cin.fail() || (input_mode != 1 && input_mode != 2)) {
-        std::cout << "Neteisinga įvestis: tinka '1' arba '2'.\n";
-        return 1;
+    try {
+        if (std::cin.fail() || (input_mode != 1 && input_mode != 2)) {
+            throw std::runtime_error("Neteisinga įvestis: tinka '1' arba '2'.\n");
+        }
+    } catch (const std::runtime_error& e) {
+        std::cout << e.what();
+        throw;
     }
 
     int student_capacity = 2;
