@@ -2,7 +2,13 @@
 #define GENERATOR_H
 
 #include <string>
+#include <chrono>
 
-void generateFile(const std::string& filename, int recordCount);
+struct GenerationResult {
+    int count;
+    double duration;
+};
+
+GenerationResult measureFileGeneration(const std::string& filename, int recordCount);
 
 #endif

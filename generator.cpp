@@ -4,8 +4,11 @@
 #include <random>
 #include <iomanip>
 #include <stdexcept>
+#include <chrono>
 
-void generateFile(const std::string& filename, int recordCount) {
+GenerationResult measureFileGeneration(const std::string& filename, int recordCount) {
+    auto start = std::chrono::high_resolution_clock::now();
+    
     std::ofstream out(filename);
     if (!out.is_open()) {
         throw std::runtime_error("Nepavyko atidaryti failo rašymui: " + filename);
@@ -34,4 +37,12 @@ void generateFile(const std::string& filename, int recordCount) {
     }
 
     out.close();
+    
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = end - start;
+    
+    GenerationResult res;
+    res.count = recordCount;
+    res.duration = diff.count();
+    return res;
 }
