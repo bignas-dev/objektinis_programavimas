@@ -6,8 +6,10 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <chrono>
 
 float calculateAverage(const std::vector<int>& arr) {
+    if (arr.empty()) return 0.0f;
     int sum = 0;
     for (int val : arr) {
         sum += val;
@@ -16,6 +18,7 @@ float calculateAverage(const std::vector<int>& arr) {
 }
 
 float calculateMedian(std::vector<int> arr) {   
+    if (arr.empty()) return 0.0f;
     std::sort(arr.begin(), arr.end());
     size_t size = arr.size();
     if (size % 2 == 0) {
@@ -27,6 +30,7 @@ float calculateMedian(std::vector<int> arr) {
 
 void generateRandomGrades(Mokinys& mokinys) {
     int tarp_count = rand() % 10 + 1; 
+    mokinys.tarp_rez.reserve(tarp_count);
     for (int i = 0; i < tarp_count; ++i) {
         mokinys.tarp_rez.push_back(rand() % 11); 
     }
@@ -43,110 +47,60 @@ void readStudentData(Mokinys& mokinys) {
         std::cout << "Įveskite " << mokinys.tarp_rez.size() + 1
                   << " tarpinį rezultatą (arba -1, jei baigėte): ";
         int grade;
-        std::cin >> grade;
+        if (!(std::cin >> grade)) {
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "Neteisinga įvestis. Bandykite dar kartą.\n";
+            continue;
+        }
 
-        try {
-            std::cin >> grade;
-            if (std::cin.fail()) {
-                throw std::runtime_error("Neteisinga įvestis. Bandykite dar kartą.\n");
-            }
-            if (grade == -1) {
-                break;
-            }
-            if (grade < 0 || grade > 10) {
-                throw std::runtime_error("Rezultatas turi būti nuo 0 iki 10. Bandykite dar kartą.\n");
-            }
-        } catch (const std::runtime_error& e) {
-            std::cout << e.what();
+        if (grade == -1) {
+            break;
+        }
+        if (grade < 0 || grade > 10) {
+            std::cout << "Rezultatas turi būti nuo 0 iki 10. Bandykite dar kartą.\n";
             continue;
         }
         mokinys.tarp_rez.push_back(grade);
     }
 
-    try {
-        if (mokinys.tarp_rez.empty()) {
-            throw std::runtime_error("Turite įvesti bent vieną tarpinį rezultatą.\n");
-        }
-    } catch (const std::runtime_error& e) {
-        std::cout << e.what();
-        throw;
+    if (mokinys.tarp_rez.empty()) {
+        std::cout << "Turite įvesti bent vieną tarpinį rezultatą. Generuojami atsitiktiniai.\n";
+        generateRandomGrades(mokinys);
     }
 
     std::cout << "Įveskite egzamino rezultatą: ";
-    try {
-        std::cin >> mokinys.egz_rez;
-        if (std::cin.fail()) {
-            throw std::runtime_error("Neteisinga įvestis: privalote įvesti sveikąjį skaičių.\n");
-        }
-        if (mokinys.egz_rez < 0 || mokinys.egz_rez > 10) {
-            throw std::runtime_error("Neteisinga įvestis: egzamino rezultatas turi būti nuo 0 iki 10.\n");
-        }
-    } catch (const std::runtime_error& e) {
-        std::cout << e.what();
-        throw;
+    while (!(std::cin >> mokinys.egz_rez) || mokinys.egz_rez < 0 || mokinys.egz_rez > 10) {
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        std::cout << "Neteisinga įvestis (0-10). Bandykite dar kartą: ";
     }
 }
 
 std::vector<Mokinys> readFromFile(const std::string& filename) {
     std::vector<Mokinys> students;
     std::ifstream file(filename);
-    try {
-        if (!file.is_open()) {
-            throw std::runtime_error("Klaida: nepavyko atidaryti failo " + filename + "\n");
-        }
-    } catch (const std::runtime_error& e) {
-        std::cerr << e.what();
-        throw;
+    if (!file.is_open()) {
+        throw std::runtime_error("Klaida: nepavyko atidaryti failo " + filename);
     }
 
     std::string line;
-    std::getline(file, line);
+    std::getline(file, line); // Praleidžiame antraštę
 
-    int lineNum = 1;
     while (std::getline(file, line)) {
-        lineNum++;
         if (line.empty()) continue; 
 
         std::istringstream iss(line);
         Mokinys m;
-        iss >> m.vardas >> m.pavarde;
+        if (!(iss >> m.vardas >> m.pavarde)) continue;
 
         int grade;
         for (int i = 0; i < 5; ++i) {
-            try {
-                if (!(iss >> grade)) {
-                    std::string err = "Klaida faile " + filename + ", eilutėje " + std::to_string(lineNum)
-                              + ": trūksta namų darbų pažymių.\n";
-                    throw std::runtime_error(err);
-                }
-                if (grade < 0 || grade > 10) {
-                    std::string err = "Klaida faile " + filename + ", eilutėje " + std::to_string(lineNum)
-                              + ": pažymys " + std::to_string(grade) + " neleistinas (turi būti 0-10).\n";
-                    throw std::runtime_error(err);
-                }
-            } catch (const std::runtime_error& e) {
-                std::cerr << e.what();
-                throw;
+            if (iss >> grade) {
+                m.tarp_rez.push_back(grade);
             }
-            m.tarp_rez.push_back(grade);
         }
-
-        try {
-            if (!(iss >> m.egz_rez)) {
-                std::string err = "Klaida faile " + filename + ", eilutėje " + std::to_string(lineNum)
-                          + ": trūksta egzamino rezultato.\n";
-                throw std::runtime_error(err);
-            }
-            if (m.egz_rez < 0 || m.egz_rez > 10) {
-                std::string err = "Klaida faile " + filename + ", eilutėje " + std::to_string(lineNum)
-                          + ": egzamino rezultatas " + std::to_string(m.egz_rez) + " neleistinas (turi būti 0-10).\n";
-                throw std::runtime_error(err);
-            }
-        } catch (const std::runtime_error& e) {
-            std::cerr << e.what();
-            throw;
-        }
-
+        iss >> m.egz_rez;
         students.push_back(m);
     }
 
@@ -166,18 +120,13 @@ void calculateFinalGrade(Mokinys& mokinys, const std::string& choice) {
 
 void displayResults(const std::vector<Mokinys>& students, const std::string& choice) { 
     std::ostream& out = std::cout;
-    const int langelio_ilgis = 30;
+    const int langelio_ilgis = 20;
     std::string kategorija = (choice == "1") ? "Galutinis (Vid.)" : "Galutinis (Med.)";
 
-    auto old_precision = out.precision();
-    auto old_flags = out.flags();
-
     out << std::left;  
-    
     out << std::setw(langelio_ilgis) << "Pavardė"
         << std::setw(langelio_ilgis) << "Vardas"
         << std::setw(langelio_ilgis) << kategorija << '\n';
-
     out << std::string(3 * langelio_ilgis, '-') << '\n';
 
     for (const auto& m : students) {
@@ -186,7 +135,57 @@ void displayResults(const std::vector<Mokinys>& students, const std::string& cho
             << std::setw(langelio_ilgis) << std::fixed << std::setprecision(2) << m.galutinis
             << '\n';
     }
+}
 
-    out.flags(old_flags);
-    out.precision(old_precision);
+ProcessingResult runProcessingTest(const std::string& filename, const std::string& gradeType) {
+    auto total_start = std::chrono::high_resolution_clock::now();
+    
+    // 1. Nuskaitymas
+    auto read_start = std::chrono::high_resolution_clock::now();
+    std::vector<Mokinys> students = readFromFile(filename);
+    auto read_end = std::chrono::high_resolution_clock::now();
+    
+    // 2. Rūšiavimas į kategorijas
+    auto sort_start = std::chrono::high_resolution_clock::now();
+    for (auto& s : students) {
+        calculateFinalGrade(s, gradeType);
+    }
+    
+    std::vector<Mokinys> vargsiukai;
+    std::vector<Mokinys> kietiakiai;
+    
+    for (const auto& s : students) {
+        if (s.galutinis < 5.0f) {
+            vargsiukai.push_back(s);
+        } else {
+            kietiakiai.push_back(s);
+        }
+    }
+    auto sort_end = std::chrono::high_resolution_clock::now();
+    
+    // 3. Išvedimas
+    auto write_start = std::chrono::high_resolution_clock::now();
+    auto write_to_file = [&](const std::string& fname, const std::vector<Mokinys>& list) {
+        std::ofstream out(fname);
+        out << std::left << std::setw(20) << "Vardas" << std::setw(20) << "Pavarde" << "Galutinis\n";
+        for (const auto& s : list) {
+            out << std::left << std::setw(20) << s.vardas << std::setw(20) << s.pavarde 
+                << std::fixed << std::setprecision(2) << s.galutinis << "\n";
+        }
+        out.close();
+    };
+    
+    write_to_file("vargšiukai.txt", vargsiukai);
+    write_to_file("kietiakai.txt", kietiakiai);
+    auto write_end = std::chrono::high_resolution_clock::now();
+    
+    auto total_end = std::chrono::high_resolution_clock::now();
+    
+    ProcessingResult res;
+    res.readDuration = std::chrono::duration<double>(read_end - read_start).count();
+    res.sortDuration = std::chrono::duration<double>(sort_end - sort_start).count();
+    res.writeDuration = std::chrono::duration<double>(write_end - write_start).count();
+    res.totalDuration = std::chrono::duration<double>(total_end - total_start).count();
+    
+    return res;
 }

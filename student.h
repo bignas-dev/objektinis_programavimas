@@ -20,4 +20,13 @@ std::vector<Mokinys> readFromFile(const std::string& filename);
 void calculateFinalGrade(Mokinys& mokinys, const std::string& choice);
 void displayResults(const std::vector<Mokinys>& students, const std::string& choice);
 
+struct ProcessingResult {
+    double readDuration;
+    double sortDuration;
+    double writeDuration;
+    double totalDuration;
+};
+
+ProcessingResult runProcessingTest(const std::string& filename, const std::string& gradeType);
+
 #endif
