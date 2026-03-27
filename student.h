@@ -228,6 +228,9 @@ struct ProcessingResult {
     double totalDuration;
     std::string containerType;
     int strategy;
+    
+    ProcessingResult() : readDuration(0), sortDuration(0), splitDuration(0), 
+                         writeDuration(0), totalDuration(0), strategy(0) {}
 };
 
 #endif
