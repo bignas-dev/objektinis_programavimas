@@ -19,6 +19,8 @@ struct Mokinys {
     std::vector<int> tarp_rez;
     int egz_rez;
     float galutinis;
+    
+    Mokinys() : egz_rez(0), galutinis(0.0f) {}
 };
 
 inline float calculateAverage(const std::vector<int>& arr) {
