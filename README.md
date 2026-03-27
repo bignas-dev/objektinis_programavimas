@@ -7,6 +7,7 @@ Objektinio programavimo repozitorija. Ši versija (v1.0) pritaiko tris skirtingu
 1. Klonuokite git repozitoriją.
 2. Kompiliuokite programą naudojant `make` arba `g++ -O3 -std=c++17 -o program main.cpp benchmark.cpp`.
 3. Paleiskite `./program` arba `make run`.
+4. Rezultatai bus išsaugoti faile `rezultatai.csv`.
 
 ## Diegimo instrukcijos (Unix)
 
