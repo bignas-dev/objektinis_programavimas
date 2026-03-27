@@ -8,6 +8,8 @@
 struct GenerationResult {
     int count;
     double duration;
+    
+    GenerationResult() : count(0), duration(0.0) {}
 };
 
 struct BenchmarkResult {
