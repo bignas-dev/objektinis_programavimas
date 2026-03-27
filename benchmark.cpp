@@ -123,6 +123,10 @@ BenchmarkResult runBenchmarkDeque(const std::string& filename, int strategy, con
 
 void writeResultsToCSV(const std::string& filename, const std::vector<BenchmarkResult>& results) {
     std::ofstream out(filename);
+    if (!out.is_open()) {
+        std::cerr << "Klaida: nepavyko atidaryti failo " << filename << " rašymui\n";
+        return;
+    }
     out << "Konteineris,Strategija,Irasu_kiekis,Nuskaitymas_s,Rusiavimas_s,Dalijimas_s,Isvedimas_s,Bendra_s\n";
     for (const auto& r : results) {
         out << r.containerType << ","
