@@ -132,13 +132,14 @@ Container readFromFile(const std::string& filename) {
     std::string line;
     std::getline(file, line);
 
+    Mokinys m;
     while (std::getline(file, line)) {
         if (line.empty()) continue; 
 
         std::istringstream iss(line);
-        Mokinys m;
         if (!(iss >> m.vardas >> m.pavarde)) continue;
 
+        m.tarp_rez.clear();
         int grade;
         for (int i = 0; i < 5; ++i) {
             if (iss >> grade) {
