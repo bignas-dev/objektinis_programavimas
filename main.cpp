@@ -52,5 +52,6 @@ int main() {
     std::cout << "\nRezultatai issaugoti i 'rezultatai.csv'\n";
     
     std::cout << "\nTyrimai baigti.\n";
+    std::cout << "Rezultatai išsaugoti faile: rezultatai.csv\n";
     return 0;
 }
