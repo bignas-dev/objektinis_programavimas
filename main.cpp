@@ -13,6 +13,7 @@ int main() {
     std::cout << "Strategijos: 1 (du nauji konteineriai), 2 (vienas naujas + trynimas), 3 (std::partition)\n\n";
     
     std::vector<BenchmarkResult> allResults;
+    allResults.reserve(45);
     
     for (size_t i = 0; i < sizes.size(); ++i) {
         std::string filename = "studentai_" + size_names[i] + ".txt";
