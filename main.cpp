@@ -47,6 +47,7 @@ int main() {
     
     std::cout << "\n=== VISI REZULTATAI ===\n";
     printResultsTable(allResults);
+    printContainerComparison(allResults);
     
     writeResultsToCSV("rezultatai.csv", allResults);
     std::cout << "\nRezultatai issaugoti i 'rezultatai.csv'\n";
