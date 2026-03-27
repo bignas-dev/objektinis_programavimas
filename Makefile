@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O3 -std=c++17
+CXXFLAGS = -O3 -std=c++17 -Wall
 
 SRC = main.cpp benchmark.cpp
 HEADERS = benchmark.h student.h
@@ -16,4 +16,7 @@ clean:
 run: $(TARGET)
 	./$(TARGET)
 
-.PHONY: all clean run
+debug: CXXFLAGS = -g -std=c++17 -Wall
+debug: $(TARGET)
+
+.PHONY: all clean run debug
