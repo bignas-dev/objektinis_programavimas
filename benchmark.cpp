@@ -8,6 +8,7 @@
 #include <deque>
 #include <algorithm>
 #include <random>
+#include <map>
 
 GenerationResult measureFileGeneration(const std::string& filename, int recordCount) {
     auto start = std::chrono::high_resolution_clock::now();
@@ -161,4 +162,25 @@ void printResultsTable(const std::vector<BenchmarkResult>& results) {
                   << std::setw(14) << r.totalDuration << "\n";
     }
     std::cout << std::string(100, '=') << "\n";
+}
+
+void printContainerComparison(const std::vector<BenchmarkResult>& results) {
+    std::cout << "\n=== KONTEINERIŲ PALYGINIMAS (vidurkis) ===\n";
+    std::map<std::string, double> containerTotals;
+    std::map<std::string, int> containerCounts;
+    
+    for (const auto& r : results) {
+        containerTotals[r.containerType] += r.totalDuration;
+        containerCounts[r.containerType]++;
+    }
+    
+    std::cout << std::left << std::setw(15) << "Konteineris" 
+              << std::setw(15) << "Vid. laikas (s)" << "\n";
+    std::cout << std::string(30, '-') << "\n";
+    
+    for (const auto& p : containerTotals) {
+        double avg = p.second / containerCounts[p.first];
+        std::cout << std::setw(15) << p.first 
+                  << std::setw(15) << std::fixed << std::setprecision(4) << avg << "\n";
+    }
 }

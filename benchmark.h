@@ -34,5 +34,6 @@ BenchmarkResult runBenchmarkDeque(const std::string& filename, int strategy, con
 
 void writeResultsToCSV(const std::string& filename, const std::vector<BenchmarkResult>& results);
 void printResultsTable(const std::vector<BenchmarkResult>& results);
+void printContainerComparison(const std::vector<BenchmarkResult>& results);
 
 #endif
