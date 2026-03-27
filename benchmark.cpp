@@ -41,11 +41,10 @@ GenerationResult measureFileGeneration(const std::string& filename, int recordCo
     out.close();
     
     auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> diff = end - start;
     
     GenerationResult res;
     res.count = recordCount;
-    res.duration = diff.count();
+    res.duration = std::chrono::duration<double>(end - start).count();
     return res;
 }
 
