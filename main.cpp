@@ -1,39 +1,54 @@
-#include "student.h"
-#include "generator.h"
+#include "benchmark.h"
 #include <iostream>
-#include <vector>
 #include <iomanip>
-
-void printResults(const std::string& size, GenerationResult gen, ProcessingResult proc) {
-    std::cout << "\nFailo dydis: " << size << "\n";
-    std::cout << "--------------------------------------\n";
-    std::cout << std::left << std::setw(30) << "Veiksmas" << "Laikas (s)\n";
-    std::cout << std::string(45, '-') << "\n";
-    std::cout << std::setw(30) << "Failo generavimas (1 tyrimas)" << gen.duration << "\n";
-    std::cout << std::setw(30) << "Nuskaitymas iš failo" << proc.readDuration << "\n";
-    std::cout << std::setw(30) << "Rūšiavimas į kategorijas" << proc.sortDuration << "\n";
-    std::cout << std::setw(30) << "Išvedimas į du failus" << proc.writeDuration << "\n";
-    std::cout << std::setw(30) << "Bendra programa (2 tyrimas)" << proc.totalDuration << "\n";
-}
+#include <vector>
 
 int main() {
     std::vector<int> sizes = {1000, 10000, 100000, 1000000, 10000000};
     std::vector<std::string> size_names = {"1k", "10k", "100k", "1M", "10M"};
-
-    std::cout << "Pradedami v0.4 spartos tyrimai...\n";
-
+    std::string gradeType = "1";
+    
+    std::cout << "Pradedami v1.0 spartos tyrimai...\n";
+    std::cout << "Tiriami konteineriai: vector, list, deque\n";
+    std::cout << "Strategijos: 1 (du nauji), 2 (vienas naujas + trynimas), 3 (partition)\n\n";
+    
+    std::vector<BenchmarkResult> allResults;
+    
     for (size_t i = 0; i < sizes.size(); ++i) {
         std::string filename = "studentai_" + size_names[i] + ".txt";
-        
-        // 1 tyrimas: kūrimas
+        std::cout << "=== " << size_names[i] << " (" << sizes[i] << " irasu) ===\n";
+        std::cout << "Generuojamas failas...\n";
         GenerationResult gen = measureFileGeneration(filename, sizes[i]);
+        std::cout << "Failo generavimo laikas: " << std::fixed << std::setprecision(4) << gen.duration << " s\n\n";
         
-        // 2 tyrimas: apdorojimas (naudoja jau sukurtą failą)
-        ProcessingResult proc = runProcessingTest(filename, "1"); // Naudojame vidurkį
-        
-        printResults(size_names[i], gen, proc);
+        for (int strategy = 1; strategy <= 3; ++strategy) {
+            std::cout << "Strategija " << strategy << " (vector): " << std::flush;
+            BenchmarkResult resVec = runBenchmarkVector(filename, strategy, gradeType);
+            resVec.recordCount = sizes[i];
+            allResults.push_back(resVec);
+            std::cout << "baigta\n";
+            
+            std::cout << "Strategija " << strategy << " (list): " << std::flush;
+            BenchmarkResult resList = runBenchmarkList(filename, strategy, gradeType);
+            resList.recordCount = sizes[i];
+            allResults.push_back(resList);
+            std::cout << "baigta\n";
+            
+            std::cout << "Strategija " << strategy << " (deque): " << std::flush;
+            BenchmarkResult resDeque = runBenchmarkDeque(filename, strategy, gradeType);
+            resDeque.recordCount = sizes[i];
+            allResults.push_back(resDeque);
+            std::cout << "baigta\n";
+        }
+        std::cout << "\n";
     }
-
+    
+    std::cout << "\n=== VISI REZULTATAI ===\n";
+    printResultsTable(allResults);
+    
+    writeResultsToCSV("rezultatai.csv", allResults);
+    std::cout << "\nRezultatai issaugoti i 'rezultatai.csv'\n";
+    
     std::cout << "\nTyrimai baigti.\n";
     return 0;
 }
