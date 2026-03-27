@@ -51,6 +51,10 @@ GenerationResult measureFileGeneration(const std::string& filename, int recordCo
 
 template<typename Container>
 BenchmarkResult runBenchmark(const std::string& filename, int strategy, const std::string& gradeType, const std::string& containerName) {
+    BenchmarkResult res;
+    res.containerType = containerName;
+    res.strategy = strategy;
+    
     auto total_start = std::chrono::high_resolution_clock::now();
     
     auto read_start = std::chrono::high_resolution_clock::now();
@@ -96,10 +100,6 @@ BenchmarkResult runBenchmark(const std::string& filename, int strategy, const st
     
     auto total_end = std::chrono::high_resolution_clock::now();
     
-    BenchmarkResult res;
-    res.containerType = containerName;
-    res.strategy = strategy;
-    res.recordCount = 0;
     res.readDuration = std::chrono::duration<double>(read_end - read_start).count();
     res.sortDuration = std::chrono::duration<double>(sort_end - sort_start).count();
     res.splitDuration = std::chrono::duration<double>(split_end - split_start).count();
