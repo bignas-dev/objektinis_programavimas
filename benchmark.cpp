@@ -139,23 +139,23 @@ void writeResultsToCSV(const std::string& filename, const std::vector<BenchmarkR
 
 void printResultsTable(const std::vector<BenchmarkResult>& results) {
     std::cout << "\n" << std::string(100, '=') << "\n";
-    std::cout << std::left << std::setw(12) << "Konteineris" 
-              << std::setw(10) << "Strategija" 
-              << std::setw(12) << "Nuskaitymas" 
-              << std::setw(12) << "Rūšiavimas" 
-              << std::setw(12) << "Dalijimas" 
-              << std::setw(12) << "Išvedimas" 
-              << std::setw(12) << "Bendra" << "\n";
+    std::cout << std::left << std::setw(15) << "Konteineris" 
+              << std::setw(12) << "Strategija" 
+              << std::setw(14) << "Nuskaitymas" 
+              << std::setw(14) << "Rūšiavimas" 
+              << std::setw(14) << "Dalijimas" 
+              << std::setw(14) << "Išvedimas" 
+              << std::setw(14) << "Bendra" << "\n";
     std::cout << std::string(100, '-') << "\n";
     
     for (const auto& r : results) {
-        std::cout << std::left << std::setw(12) << r.containerType 
-                  << std::setw(10) << r.strategy 
-                  << std::setw(12) << std::fixed << std::setprecision(4) << r.readDuration 
-                  << std::setw(12) << r.sortDuration 
-                  << std::setw(12) << r.splitDuration 
-                  << std::setw(12) << r.writeDuration 
-                  << std::setw(12) << r.totalDuration << "\n";
+        std::cout << std::left << std::setw(15) << r.containerType 
+                  << std::setw(12) << r.strategy 
+                  << std::setw(14) << std::fixed << std::setprecision(4) << r.readDuration 
+                  << std::setw(14) << r.sortDuration 
+                  << std::setw(14) << r.splitDuration 
+                  << std::setw(14) << r.writeDuration 
+                  << std::setw(14) << r.totalDuration << "\n";
     }
     std::cout << std::string(100, '=') << "\n";
 }
