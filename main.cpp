@@ -10,7 +10,7 @@ int main() {
     
     std::cout << "Pradedami v1.0 spartos tyrimai...\n";
     std::cout << "Tiriami konteineriai: vector, list, deque\n";
-    std::cout << "Strategijos: 1 (du nauji), 2 (vienas naujas + trynimas), 3 (partition)\n\n";
+    std::cout << "Strategijos: 1 (du nauji konteineriai), 2 (vienas naujas + trynimas), 3 (std::partition)\n\n";
     
     std::vector<BenchmarkResult> allResults;
     
