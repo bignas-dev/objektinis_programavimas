@@ -1,11 +1,8 @@
 #ifndef STUDENT_H
 #define STUDENT_H
 
-#include <string>
-#include <vector>
-#include <list>
-#include <deque>
 #include <iostream>
+#include <vector>
 #include <iomanip>
 #include <algorithm>
 #include <fstream>
@@ -19,11 +16,30 @@ struct Mokinys {
     std::vector<int> tarp_rez;
     int egz_rez;
     float galutinis;
-    
-    Mokinys() : egz_rez(0), galutinis(0.0f) {}
 };
 
-inline float calculateAverage(const std::vector<int>& arr) {
+struct ProcessingResult {
+    double readDuration;
+    double sortDuration;
+    double writeDuration;
+    double totalDuration;
+};
+
+const std::string vardai[] = {"Jonas", "Petras", "Antanas", "Vytautas", "Kazys", "Juozas", "Algirdas", "Bronius", "Edmundas", "Rimantas"};
+const std::string pavardes[] = {"Jonaitis", "Petraitis", "Antanaitis", "Vytautaitis", "Kazaitis", "Juozaitis", "Algirdaitis", "Bronaitis", "Edmundaitis", "Rimantaitis"};
+
+int getVarduKiekis() { return 10; }
+int getPavardziuKiekis() { return 10; }
+
+void generateRandomGrades(Mokinys& mokinys) {
+    int tarp_count = rand() % 10 + 1;
+    mokinys.tarp_rez.reserve(tarp_count);
+    for (int i = 0; i < tarp_count; ++i) {
+        mokinys.tarp_rez.push_back(rand() % 11);
+    }
+}
+
+float calculateAverage(const std::vector<int>& arr) {
     if (arr.empty()) return 0.0f;
     int sum = 0;
     for (int val : arr) {
@@ -32,7 +48,7 @@ inline float calculateAverage(const std::vector<int>& arr) {
     return static_cast<float>(sum) / static_cast<float>(arr.size());
 }
 
-inline float calculateMedian(std::vector<int> arr) {   
+float calculateMedian(std::vector<int> arr) {   
     if (arr.empty()) return 0.0f;
     std::sort(arr.begin(), arr.end());
     size_t size = arr.size();
@@ -43,7 +59,10 @@ inline float calculateMedian(std::vector<int> arr) {
     }
 }
 
-inline void generateRandomGrades(Mokinys& mokinys) {
+void generateRandomData(Mokinys& mokinys) {
+    mokinys.vardas = vardai[rand() % getVarduKiekis()];
+    mokinys.pavarde = pavardes[rand() % getPavardziuKiekis()];
+
     int tarp_count = rand() % 10 + 1; 
     mokinys.tarp_rez.reserve(tarp_count);
     for (int i = 0; i < tarp_count; ++i) {
@@ -52,7 +71,7 @@ inline void generateRandomGrades(Mokinys& mokinys) {
     mokinys.egz_rez = rand() % 11;
 }
 
-inline void readStudentData(Mokinys& mokinys) {
+void readStudentData(Mokinys& mokinys) {
     std::cout << "Įveskite vardą: ";
     std::cin >> mokinys.vardas;
     std::cout << "Įveskite pavardę: ";
@@ -92,38 +111,8 @@ inline void readStudentData(Mokinys& mokinys) {
     }
 }
 
-inline void calculateFinalGrade(Mokinys& mokinys, const std::string& choice) {
-    float tarp_rez;
-    if (choice == "1") {
-        tarp_rez = calculateAverage(mokinys.tarp_rez);
-    } else {
-        tarp_rez = calculateMedian(mokinys.tarp_rez);
-    }
-    mokinys.galutinis = 0.6f * mokinys.egz_rez + 0.4f * tarp_rez;
-}
-
-inline void displayResults(const std::vector<Mokinys>& students, const std::string& choice) { 
-    std::ostream& out = std::cout;
-    const int langelio_ilgis = 20;
-    std::string kategorija = (choice == "1") ? "Galutinis (Vid.)" : "Galutinis (Med.)";
-
-    out << std::left;  
-    out << std::setw(langelio_ilgis) << "Pavardė"
-        << std::setw(langelio_ilgis) << "Vardas"
-        << std::setw(langelio_ilgis) << kategorija << '\n';
-    out << std::string(3 * langelio_ilgis, '-') << '\n';
-
-    for (const auto& m : students) {
-        out << std::setw(langelio_ilgis) << m.pavarde
-            << std::setw(langelio_ilgis) << m.vardas
-            << std::setw(langelio_ilgis) << std::fixed << std::setprecision(2) << m.galutinis
-            << '\n';
-    }
-}
-
-template<typename Container>
-Container readFromFile(const std::string& filename) {
-    Container students;
+std::vector<Mokinys> readFromFile(const std::string& filename) {
+    std::vector<Mokinys> students;
     std::ifstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("Klaida: nepavyko atidaryti failo " + filename);
@@ -132,14 +121,13 @@ Container readFromFile(const std::string& filename) {
     std::string line;
     std::getline(file, line);
 
-    Mokinys m;
     while (std::getline(file, line)) {
         if (line.empty()) continue; 
 
         std::istringstream iss(line);
+        Mokinys m;
         if (!(iss >> m.vardas >> m.pavarde)) continue;
 
-        m.tarp_rez.clear();
         int grade;
         for (int i = 0; i < 5; ++i) {
             if (iss >> grade) {
@@ -154,83 +142,225 @@ Container readFromFile(const std::string& filename) {
     return students;
 }
 
-template<typename Container>
-void sortStudents(Container& students) {
-    std::sort(students.begin(), students.end(), [](const Mokinys& a, const Mokinys& b) {
-        return a.galutinis < b.galutinis;
-    });
+void calculateFinalGrade(Mokinys& mokinys, const std::string& choice) {
+    float tarp_rez;
+    if (choice == "1") {
+        tarp_rez = calculateAverage(mokinys.tarp_rez);
+    } else {
+        tarp_rez = calculateMedian(mokinys.tarp_rez);
+    }
+    mokinys.galutinis = 0.6f * mokinys.egz_rez + 0.4f * tarp_rez;
 }
 
-template<>
-inline void sortStudents<std::list<Mokinys>>(std::list<Mokinys>& students) {
-    students.sort([](const Mokinys& a, const Mokinys& b) {
-        return a.galutinis < b.galutinis;
-    });
+void printResults(const std::vector<Mokinys>& students,
+                  const std::string& choice,
+                  std::ostream& out)
+{
+    const int langelio_ilgis = 20;
+    std::string kategorija = (choice == "1") ? "Galutinis (Vid.)" : "Galutinis (Med.)";
+
+    out << std::left;
+    out << std::setw(langelio_ilgis) << "Pavardė"
+        << std::setw(langelio_ilgis) << "Vardas"
+        << std::setw(langelio_ilgis) << kategorija << '\n';
+    out << std::string(3 * langelio_ilgis, '-') << '\n';
+
+    for (const auto& m : students) {
+        out << std::setw(langelio_ilgis) << m.pavarde
+            << std::setw(langelio_ilgis) << m.vardas
+            << std::setw(langelio_ilgis) << std::fixed << std::setprecision(2) << m.galutinis
+            << '\n';
+    }
+}
+
+void displayResults(const std::vector<Mokinys>& students, const std::string& choice) {
+    printResults(students, choice, std::cout);
+}
+
+void writeResultsToAFile(const std::vector<Mokinys>& students, const std::string& choice, const std::string& filename) {
+    std::ofstream outFile(filename);
+    if (!outFile) {
+        std::cerr << "Failed to open the file.\n";
+        return; 
+    }
+    printResults(students, choice, outFile);
+}
+
+void runGenerationTest(const std::string& filename, int count) {
+	auto start = std::chrono::high_resolution_clock::now();
+
+	std::vector<Mokinys> students;
+	students.reserve(count);
+
+	for (int j = 0; j < count; j++) {
+		Mokinys m;
+		generateRandomData(m);
+		students.push_back(m);
+	}
+
+	std::ofstream outFile(filename);
+	outFile << std::left << std::setw(20) << "Vardas" << std::setw(20) << "Pavarde";
+	for (int i = 0; i < 5; i++) {
+		outFile << std::setw(10) << "Pazymys";
+	}
+	outFile << std::setw(10) << "Egzaminas\n";
+
+	for (const auto& s : students) {
+		outFile << std::left << std::setw(20) << s.vardas << std::setw(20) << s.pavarde;
+		for (int grade : s.tarp_rez) {
+			outFile << std::setw(10) << grade;
+		}
+		outFile << std::setw(10) << s.egz_rez << "\n";
+	}
+	outFile.close();
+
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	std::cout << filename << " generated " << count << " students in " << duration << "ms\n";
 }
 
 template<typename Container>
-Container strategy1Split(Container& students) {
-    Container vargsiukai;
+void runGenerationTestT(const std::string& filename, int count) {
+	auto start = std::chrono::high_resolution_clock::now();
+	Container students;
+	for (int j = 0; j < count; j++) {
+		Mokinys m;
+		generateRandomData(m);
+		students.push_back(m);
+	}
+	std::ofstream outFile(filename);
+	outFile << std::left << std::setw(20) << "Vardas" << std::setw(20) << "Pavarde";
+	for (int i = 0; i < 5; i++) outFile << std::setw(10) << "Pazymys";
+	outFile << std::setw(10) << "Egzaminas\n";
+	for (const auto& s : students) {
+		outFile << std::left << std::setw(20) << s.vardas << std::setw(20) << s.pavarde;
+		for (int grade : s.tarp_rez) outFile << std::setw(10) << grade;
+		outFile << std::setw(10) << s.egz_rez << "\n";
+	}
+	outFile.close();
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	std::cout << filename << " generated " << count << " students in " << duration << "ms\n";
+}
+
+void runProcessingTest(const std::string& filename) {
+    auto read_start = std::chrono::high_resolution_clock::now();
+    std::vector<Mokinys> students = readFromFile(filename);
+    auto read_end = std::chrono::high_resolution_clock::now();
+	auto read_duration = std::chrono::duration_cast<std::chrono::milliseconds>(read_end - read_start).count();
+	std::cout << filename << " read " << read_duration << "ms\n";
+    
+    auto sort_start = std::chrono::high_resolution_clock::now();
+    for (auto& s : students) {
+        calculateFinalGrade(s, "1");
+    }
+    
+    std::vector<Mokinys> vargsiukai;
+    std::vector<Mokinys> kietiakiai;
+    
     for (const auto& s : students) {
         if (s.galutinis < 5.0f) {
             vargsiukai.push_back(s);
+        } else {
+            kietiakiai.push_back(s);
         }
     }
-    return vargsiukai;
+    auto sort_end = std::chrono::high_resolution_clock::now();
+	auto sort_duration = std::chrono::duration_cast<std::chrono::milliseconds>(sort_end - sort_start).count();
+	std::cout << filename << " sort " << sort_duration << "ms\n";
+    
+    auto write_start = std::chrono::high_resolution_clock::now();
+    auto write_to_file = [&](const std::string& fname, const std::vector<Mokinys>& list) {
+        std::ofstream out(fname);
+        out << std::left << std::setw(20) << "Vardas" << std::setw(20) << "Pavarde" << "Galutinis\n";
+        for (const auto& s : list) {
+            out << std::left << std::setw(20) << s.vardas << std::setw(20) << s.pavarde 
+                << std::fixed << std::setprecision(2) << s.galutinis << "\n";
+        }
+        out.close();
+    };
+    
+    write_to_file("vargšiukai.txt", vargsiukai);
+    write_to_file("kietiakai.txt", kietiakiai);
+    auto write_end = std::chrono::high_resolution_clock::now();
+	auto write_duration = std::chrono::duration_cast<std::chrono::milliseconds>(write_end - write_start).count();
+	std::cout << filename << " write " << write_duration << "ms\n";
+    
+	auto total_duration = std::chrono::duration_cast<std::chrono::milliseconds>(write_end - read_start).count();
+	std::cout << filename << " all " << total_duration << "ms\n";
 }
 
 template<typename Container>
-Container strategy2Split(Container& students) {
-    Container vargsiukai;
-    auto it = students.begin();
-    while (it != students.end()) {
+Container readFromFileGeneric(const std::string& filename) {
+    Container students;
+    std::ifstream file(filename);
+    if (!file.is_open()) throw std::runtime_error("Cannot open: " + filename);
+    std::string line;
+    std::getline(file, line);
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+        std::istringstream iss(line);
+        Mokinys m;
+        iss >> m.vardas >> m.pavarde;
+        int grade;
+        for (int i = 0; i < 5; ++i) {
+            if (iss >> grade) m.tarp_rez.push_back(grade);
+        }
+        iss >> m.egz_rez;
+        m.galutinis = 0.6f * m.egz_rez + 0.4f * calculateAverage(m.tarp_rez);
+        students.push_back(m);
+    }
+    return students;
+}
+
+template<typename Container>
+void partitionStrategy1(const Container& students, Container& vargsiukai, Container& kietiakiai) {
+    for (const auto& s : students) {
+        if (s.galutinis < 5.0f) vargsiukai.push_back(s);
+        else kietiakiai.push_back(s);
+    }
+}
+
+template<typename Container>
+void partitionStrategy2(Container& students, Container& vargsiukai) {
+    for (auto it = students.begin(); it != students.end(); ) {
         if (it->galutinis < 5.0f) {
-            vargsiukai.push_back(*it);
+            vargsiukai.push_back(std::move(*it));
             it = students.erase(it);
         } else {
             ++it;
         }
     }
-    return vargsiukai;
 }
 
 template<typename Container>
-Container strategy3Split(Container& students) {
-    Container vargsiukai;
-    auto partition_point = std::stable_partition(students.begin(), students.end(), 
+void partitionStrategy3(Container& students, Container& vargsiukai, Container& kietiakiai) {
+    auto partition_it = std::stable_partition(students.begin(), students.end(),
         [](const Mokinys& s) { return s.galutinis >= 5.0f; });
-    
-    vargsiukai.insert(vargsiukai.end(), partition_point, students.end());
-    students.erase(partition_point, students.end());
-    
-    return vargsiukai;
+    kietiakiai.assign(students.begin(), partition_it);
+    vargsiukai.assign(partition_it, students.end());
 }
 
-template<>
-inline std::list<Mokinys> strategy3Split<std::list<Mokinys>>(std::list<Mokinys>& students) {
-    std::list<Mokinys> vargsiukai;
-    auto it = students.begin();
-    while (it != students.end()) {
-        if (it->galutinis < 5.0f) {
-            vargsiukai.splice(vargsiukai.end(), students, it++);
-        } else {
-            ++it;
-        }
+template<typename Container>
+long long runPartitionBenchmark(const std::string& filename, int strategy) {
+    Container students = readFromFileGeneric<Container>(filename);
+    for (auto& s : students) {
+        s.galutinis = 0.6f * s.egz_rez + 0.4f * calculateAverage(s.tarp_rez);
     }
-    return vargsiukai;
-}
-
-struct ProcessingResult {
-    double readDuration;
-    double sortDuration;
-    double splitDuration;
-    double writeDuration;
-    double totalDuration;
-    std::string containerType;
-    int strategy;
     
-    ProcessingResult() : readDuration(0), sortDuration(0), splitDuration(0), 
-                         writeDuration(0), totalDuration(0), strategy(0) {}
-};
+    auto part_start = std::chrono::high_resolution_clock::now();
+    Container vargsiukai, kietiakiai;
+    
+    if (strategy == 1) {
+        partitionStrategy1(students, vargsiukai, kietiakiai);
+    } else if (strategy == 2) {
+        partitionStrategy2(students, vargsiukai);
+    } else {
+        partitionStrategy3(students, vargsiukai, kietiakiai);
+    }
+    
+    auto part_end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(part_end - part_start).count();
+}
 
 #endif

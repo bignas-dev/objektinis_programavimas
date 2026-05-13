@@ -1,22 +1,15 @@
-CXX = g++
-CXXFLAGS = -O3 -std=c++17 -Wall
+.PHONY: main bench gen clean
 
-SRC = main.cpp benchmark.cpp
-HEADERS = benchmark.h student.h
-TARGET = program
+main: main.cpp
+	g++ main.cpp -o main && ./main
 
-all: $(TARGET)
+bench: benchmark.cpp
+	g++ benchmark.cpp -o benchmark && ./benchmark
 
-$(TARGET): $(SRC) $(HEADERS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRC)
+gen: generator.cpp
+	g++ generator.cpp -o generator && ./generator
 
 clean:
-	rm -f $(TARGET) *.txt rezultatai.csv
+	rm -f main benchmark generator *.txt
 
-run: $(TARGET)
-	./$(TARGET)
 
-debug: CXXFLAGS = -g -std=c++17 -Wall
-debug: $(TARGET)
-
-.PHONY: all clean run debug
