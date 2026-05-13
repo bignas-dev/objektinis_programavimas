@@ -11,7 +11,7 @@
 
 
 int main() {
-    std::vector<std::string> sizes = {"1k", "10k", "100k" };
+    std::vector<std::string> sizes = {"1k", "10k" };
     std::vector<std::string> containers = {"vector", "list", "deque"};
     
     std::cout << "\n";
