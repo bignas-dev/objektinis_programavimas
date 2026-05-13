@@ -7,7 +7,7 @@ Objektinio programavimo repozitorija. Ši versija (v1.0) pritaiko tris skirtingu
 | Parametras | Reikšmė |
 |------------|---------|
 | **CPU** | AMD Ryzen 5 5600H with Radeon Graphics |
-| **RAM** | 13 GB DDR4 |
+| **RAM** | 14 GB DDR4 |
 | **Diskas** | NVMe SSD 476.9 GB |
 | **OS** | Linux |
 | **Kompiliatorius** | g++ (C++17) |
